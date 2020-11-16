@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Iftikhor99/server/pkg/banners"
+	"github.com/Iftikhor99/httpForms/pkg/banners"
 )
 
 // Server npegctasnseT coOow normyeckwi CepBep Hawero npunomeHna.
