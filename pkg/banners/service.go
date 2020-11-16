@@ -3,7 +3,10 @@ package banners
 import (
 	"context"
 	"errors"
+	"io"
+	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"strconv"
 	"strings"
@@ -70,7 +73,7 @@ func (s *Service) All(ctx context.Context) ([]*Banner, error) {
 }
 
 // Save for
-func (s *Service) Save(ctx context.Context, item *Banner) (*Banner, error) {
+func (s *Service) Save(ctx context.Context, item *Banner, file multipart.File) (*Banner, error) {
 	//var lastID int64
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -91,7 +94,9 @@ func (s *Service) Save(ctx context.Context, item *Banner) (*Banner, error) {
 			fileExtension := nameImage[extenIndex:]
 			item.Image = strconv.FormatInt(item.ID, 10) + fileExtension
 		}
+		saveFile(file, item)
 		s.items = append(s.items, item)
+
 		return item, nil
 	}
 	if item.ID != 0 {
@@ -104,6 +109,7 @@ func (s *Service) Save(ctx context.Context, item *Banner) (*Banner, error) {
 				if item.Image != "" {
 					
 					banner.Image = item.Image
+					saveFile(file, item)
 				}
 				if item.Image == "" {
 					item.Image = banner.Image
@@ -114,6 +120,7 @@ func (s *Service) Save(ctx context.Context, item *Banner) (*Banner, error) {
 					// item.Image = strconv.FormatInt(item.ID, 10) + fileExtension
 					// banner.Image = item.Image
 				}
+				
 				return item, nil
 			}
 		}
@@ -186,4 +193,29 @@ func (s *Service) Initial(request *http.Request) Banner {
 	//	panic("not implemented")
 
 	return banner
+}
+
+func saveFile(fileA multipart.File, item *Banner) {
+	content := make([]byte, 0)
+	buf := make([]byte, 4)
+		for {
+			read, err := fileA.Read(buf)
+			if err == io.EOF {
+				break
+			}
+			content = append(content, buf[:read]...)
+		}
+
+		fileNameNew := item.Image
+		if fileNameNew != "" {
+			//wdd1 := "web/banners" + "/" + fileNameNew
+			wdd1 := "c:/projects/http/web/banners" + "/" + fileNameNew
+			//log.Print(wdd)
+			err := ioutil.WriteFile(wdd1, content, 0600)
+			if err != nil {
+				log.Print(err)
+	
+			}
+		}
+		
 }

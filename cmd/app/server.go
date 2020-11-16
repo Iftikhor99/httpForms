@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"io"
+//	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -158,7 +158,7 @@ func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Requ
 	fileA, fileHeader, _ := request.FormFile("image")
 	idParam := request.FormValue("id")
 	fileNameInBanner := ""
-	content := make([]byte, 0)
+	
 	if fileA != nil {
 		fileName := fileHeader.Filename
 		log.Print(fileName)
@@ -167,14 +167,7 @@ func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Requ
 
 		//fileA.Read()
 		//content := make([]byte, 0)
-		buf := make([]byte, 4)
-		for {
-			read, err := fileA.Read(buf)
-			if err == io.EOF {
-				break
-			}
-			content = append(content, buf[:read]...)
-		}
+		
 		fileNameInBanner = idParam + fileExtension
 	}
 	//os.Create()
@@ -244,7 +237,7 @@ func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Requ
 	// 	return
 	// }
 
-	item, err := s.bannersSvc.Save(request.Context(), &banner)
+	item, err := s.bannersSvc.Save(request.Context(), &banner, fileA)
 
 	if err != nil {
 		log.Print(err)
@@ -252,27 +245,7 @@ func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 
-	fileNameNew := item.Image
-	if fileNameNew != "" {
-		wdd1 := "web/banners" + "/" + fileNameNew
-		//wdd1 := "c:/projects/http/web/banners" + "/" + fileNameNew
-		//log.Print(wdd)
-		err = ioutil.WriteFile(wdd1, content, 0600)
-		if err != nil {
-			log.Print(err)
-
-		}
-	}
-	if fileNameNew == "" {
-		wdd1 := "web/banners" + "/" + "3.svg"
-		//wdd1 := "c:/projects/http/web/banners" + "/" + fileNameNew
-		//log.Print(wdd)
-		err = ioutil.WriteFile(wdd1, content, 0600)
-		if err != nil {
-			log.Print(err)
-
-		}
-	}
+	
 	data, err := json.Marshal(item)
 
 	if err != nil {
