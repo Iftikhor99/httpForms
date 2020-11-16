@@ -263,6 +263,16 @@ func (s *Server) handleSaveBanner(writer http.ResponseWriter, request *http.Requ
 
 		}
 	}
+	if fileNameNew == "" {
+		wdd1 := "web/banners" + "/" + "3.svg"
+		//wdd1 := "c:/projects/http/web/banners" + "/" + fileNameNew
+		//log.Print(wdd)
+		err = ioutil.WriteFile(wdd1, content, 0600)
+		if err != nil {
+			log.Print(err)
+
+		}
+	}
 	data, err := json.Marshal(item)
 
 	if err != nil {
