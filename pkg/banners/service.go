@@ -109,8 +109,13 @@ func (s *Service) Save(ctx context.Context, item *Banner) (*Banner, error) {
 					banner.Image = item.Image
 				}
 				if item.Image == "" {
-					item.Image = "3.svg"
+					//item.Image = "3.svg"
 					//banner.Image = ""
+					nameImage := item.Image
+					extenIndex := strings.Index(nameImage, ".")
+					fileExtension := nameImage[extenIndex:]
+					item.Image = strconv.FormatInt(item.ID, 10) + fileExtension
+					banner.Image = item.Image
 				}
 				return item, nil
 			}
